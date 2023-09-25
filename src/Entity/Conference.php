@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ConferenceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +12,7 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[ORM\Entity(repositoryClass: ConferenceRepository::class)]
 #[UniqueEntity('slug')]
+#[ApiResource()]
 class Conference
 {
     #[ORM\Id]
@@ -38,7 +40,7 @@ class Conference
         $this->comments = new ArrayCollection();
     }
 
-    public function __toString(): string 
+    public function __toString(): string
     {
         return $this->city.' '.$this->year;
     }

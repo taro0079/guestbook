@@ -30,9 +30,9 @@ class ConferenceController extends AbstractController
 
     #[Route('/conference/{slug}', name: 'conference')]
     public function show(
-        Request $request, 
-        Conference $conference, 
-        CommentRepository $commentRepository, 
+        Request $request,
+        Conference $conference,
+        CommentRepository $commentRepository,
         ConferenceRepository $conferenceRepository,
         #[Autowire('%photo_dir%')] string $photoDir
     ): Response
@@ -49,6 +49,17 @@ class ConferenceController extends AbstractController
             }
 
             $this->entityManager->persist($comment);
+
+            $context = [
+                'user_ip' => $request->getClientIp(),
+                'user_agent' => $request->headers->get('user-agent'),
+                'referrer' => $request->headers->get('referrer'),
+                'permalink' => $request->getUri()
+            ];
+            if (2 === $comment->getSpamScore($context)) {
+                throw new \RuntimeException('Blatant spam, go away!');
+            }
+
             $this->entityManager->flush();
 
             return $this->redirectToRoute('conference', ['slug' => $conference->getSlug()]);
